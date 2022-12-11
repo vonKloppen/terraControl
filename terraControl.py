@@ -5,43 +5,43 @@ from time import sleep
 from gpiozero import LED
 import w1thermsensor
 
-grzalka = LED(18)
-czujnik = w1thermsensor.W1ThermSensor()
+heater = LED(18)
+sensor = w1thermsensor.W1ThermSensor()
 
 ### VARIABLES ###
 
 heatingTime = 60
 heatingTimeout = 20
 overheatTimeout = 60
-logFile = "/var/log/terraControl.log"
+logFile = "/opt/nfs/terraControl/temperature.log"
 maxTemp = 26
 
 ###
 
 def heatingON():
 
-  grzalka.on()
+  heater.on()
   sleep(heatingTime)
 
-  grzalka.off()
+  heater.off()
   sleep(heatingTimeout)
 
 
 while True:
 
   currentTime = int(time.time())
-  temperatura = czujnik.get_temperature()
+  temperature = sensor.get_temperature()
 
   f = open(logFile, "a")
-  f.writelines(str(currentTime) + ',' + str(temperatura) + '\n')
+  f.writelines(str(currentTime) + ',' + str(temperature) + '\n')
   f.close()
 
-  if temperatura < maxTemp:
+  if temperature < maxTemp:
 
     heatingON()
 
   else:
 
-    grzalka.off()
+    heater.off()
     sleep(overheatTimeout)
 
