@@ -1,0 +1,27 @@
+<!doctype html>
+<head>
+    <script src="./anychart-base.min.js" type="text/javascript"></script>
+    <script src="./anychart-data-adapter.min.js"></script>
+    <script src="./dark_turquoise.min.js"></script>
+    <script>
+      anychart.onDocumentReady(function () {
+        anychart.data.loadCsvFile("../temperature.log", function (data) {
+
+        var chart = anychart.line(data);
+        anychart.theme(anychart.themes.darkTurquoise);
+        chart.title("Chromatopelma");
+        chart.xAxis().title('Epoch');
+        chart.xGrid().enabled(false);
+        chart.yGrid().enabled(true);
+        chart.yAxis().title('Temperatura');
+        chart.container("container").draw();
+        });
+      });
+    </script>
+</head>
+<body>
+    <div id="container" style="width: 100%; height: 600px;"></div>
+    <body style="background-color:darkgrey;">
+</body>
+</html>
+
