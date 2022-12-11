@@ -1,0 +1,12 @@
+[Unit]
+Description=Terrarium temperature control daemon
+After=syslog.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/terraControl.py
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+Alias=terraControl.service
