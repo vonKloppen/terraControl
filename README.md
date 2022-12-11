@@ -1,9 +1,9 @@
-#**What is it precious?**
+##**What is it precious?**
 
 It's a simple "daemon" for monitoring temperature in terrarium.
 It creates log as csv file.
 
-## **TO-DO**
+### **TO-DO**
 
  - Move variables to config file - writing parser needed
  - Add simple www server (python) for displaying chart directly on Raspberry
