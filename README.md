@@ -12,4 +12,4 @@ It creates log as csv file.
    -- Password protection
  - Add option to choose time and date for chart
  - Convert epoch to human-readeable dates/times
-
+ - ~~ Add watchdog service ~~
