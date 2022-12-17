@@ -1,0 +1,14 @@
+[Unit]
+Description=TerraControl watchdog
+After=syslog.target
+StartLimitIntervalSec=10
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/terraCheck.sh
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=terraControl.service
