@@ -13,3 +13,4 @@ It creates log as csv file.
  - Add option to choose time and date for chart
  - Convert epoch to human-readeable dates/times
  - ~~Add watchdog service~~
+ - ~~Add catch photo with lighting~~
