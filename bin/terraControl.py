@@ -13,7 +13,7 @@ sensor = w1thermsensor.W1ThermSensor()
 heatingTime = 60
 heatingTimeout = 20
 overheatTimeout = 60
-logFile = "/opt/nfs/terraControl/temperature.log"
+logFile = "/opt/nfs/terraControl/temperature.csv"
 maxTemp = 26
 
 ###
