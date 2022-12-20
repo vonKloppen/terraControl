@@ -1,7 +1,6 @@
 #!/bin/python3
 
-import time
-from time import sleep
+from time import localtime,  strftime, sleep
 from gpiozero import LED
 import w1thermsensor
 
@@ -29,11 +28,11 @@ def heatingON():
 
 while True:
 
-  currentTime = time.localtime()
+  currentTime = strftime("%Y-%m-%d %H:%M", localtime())
   temperature = sensor.get_temperature()
 
   f = open(logFile, "a")
-  f.writelines(str(currentTime.tm_year) + '-' + str(currentTime.tm_mon) + '-' + str(currentTime.tm_mday) + ' ' + str(currentTime.tm_hour) + ':' + str(currentTime.tm_min) + ',' + str(temperature) + '\n')
+  f.writelines(currentTime + ',' + str(temperature) + '\n')
   f.close()
 
   if temperature < maxTemp:
