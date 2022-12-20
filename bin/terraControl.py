@@ -29,11 +29,11 @@ def heatingON():
 
 while True:
 
-  currentTime = int(time.time())
+  currentTime = time.localtime()
   temperature = sensor.get_temperature()
 
   f = open(logFile, "a")
-  f.writelines(str(currentTime) + ',' + str(temperature) + '\n')
+  f.writelines(str(currentTime.tm_year) + '-' + str(currentTime.tm_mon) + '-' + str(currentTime.tm_mday) + ' ' + str(currentTime.tm_hour) + ':' + str(currentTime.tm_min) + ',' + str(temperature) + '\n')
   f.close()
 
   if temperature < maxTemp:
