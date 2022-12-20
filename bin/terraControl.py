@@ -13,6 +13,7 @@ heatingTime = 60
 heatingTimeout = 10
 overheatTimeout = 60
 logFile = "/mnt/terraControl/temperature.csv"
+logFileStrip = "/mnt/terraControl/graph.csv"
 maxTemp = 26
 
 ###
@@ -34,6 +35,23 @@ while True:
   f = open(logFile, "a")
   f.writelines(currentTime + ',' + str(temperature) + '\n')
   f.close()
+
+## Whipe stripted log file.
+
+  f = open(logFileStrip, "w")
+  f.close()
+
+##
+
+  f_full = open(logFile, "r")
+ 
+    for line in (f_full.readlines() [-10:]):
+
+      f_strip = open(logFileStrip, "a")
+      f_strip.writelines(line)
+      f_strip.close()
+
+    f_full.close()
 
   if temperature < maxTemp:
 
