@@ -38,20 +38,20 @@ while True:
 
 ## Whipe stripted log file.
 
-  f = open(logFileStrip, "w")
-  f.close()
+  f_strip = open(logFileStrip, "w")
+  f_strip.close()
 
 ##
 
   f_full = open(logFile, "r")
  
-    for line in (f_full.readlines() [-10:]):
+  for line in (f_full.readlines() [-10:]):
 
-      f_strip = open(logFileStrip, "a")
-      f_strip.writelines(line)
-      f_strip.close()
+    f_strip = open(logFileStrip, "a")
+    f_strip.writelines(line)
+    f_strip.close()
 
-    f_full.close()
+  f_full.close()
 
   if temperature < maxTemp:
 
