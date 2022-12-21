@@ -5,7 +5,7 @@ It creates log as csv file.
 
 www folder contains stupidly simple html page with graphs using AnyChart scripts (https://www.anychart.com/)
 
-__Be aware that this is highly customized sollution and a work in progress and you should probably not use this code for controling temperature in terrarium with live animals!__
+***Be aware that this is highly customized sollution and a work in progress and you should probably not use this code for controling temperature in terrarium with live animals!***
 
 ## **TO-DO**
 
