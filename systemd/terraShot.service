@@ -1,0 +1,14 @@
+[Unit]
+Description=Daemon for taking pictures for TerraControl
+After=syslog.target
+StartLimitIntervalSec=10
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/terraShot.py
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=terraControl.service
