@@ -12,8 +12,8 @@ sensor = w1thermsensor.W1ThermSensor()
 heatingTime = 60
 heatingTimeout = 10
 overheatTimeout = 60
-logFile = "/mnt/terraControl/temperature.csv"
-logFileStrip = "/mnt/terraControl/graph.csv"
+logFile = "/mnt/terraControl/all.csv"
+logFileLast10 = "/mnt/terraControl/last10.csv"
 maxTemp = 26
 
 ###
@@ -38,7 +38,7 @@ while True:
 
 ## Whipe stripted log file.
 
-  f_strip = open(logFileStrip, "w")
+  f_strip = open(logFileLast10, "w")
   f_strip.close()
 
 ##
@@ -47,7 +47,7 @@ while True:
  
   for line in (f_full.readlines() [-10:]):
 
-    f_strip = open(logFileStrip, "a")
+    f_strip = open(logFileLast10, "a")
     f_strip.writelines(line)
     f_strip.close()
 
