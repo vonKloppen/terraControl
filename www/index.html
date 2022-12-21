@@ -1,28 +1,79 @@
 <!doctype html>
+
+<html lang="en-US">
+
 <head>
-    <script src="./scripts/anychart-base.min.js" type="text/javascript"></script>
-    <script src="./scripts/anychart-data-adapter.min.js"></script>
-    <script src="./themes/dark_turquoise.min.js"></script>
-    <script>
-      anychart.onDocumentReady(function () {
-        anychart.data.loadCsvFile("./log/graph.csv", function (data) {
 
-        var chart = anychart.line(data);
-        anychart.theme(anychart.themes.darkTurquoise);
-        chart.title("Chromatopelma");
-        chart.xAxis().title('Epoch');
-        chart.xGrid().enabled(false);
-        chart.yGrid().enabled(true);
-        chart.yAxis().title('Temperatura');
-        chart.container("container").draw();
-        });
+  <title>TerraContol</title>
+
+  <meta charset="UTF-8">
+
+  <script src="./scripts/anychart-base.min.js"></script>
+  <script src="./scripts/anychart-data-adapter.min.js"></script>
+  <script src="./themes/dark_turquoise.min.js"></script>
+
+  <script>
+
+    anychart.onDocumentReady(function () {
+
+      var stage = anychart.graphics.create("container");
+
+      anychart.theme(anychart.themes.darkTurquoise);
+
+      anychart.data.loadCsvFile("./log/all.csv", function (dataAll) {
+
+        var chartAll = anychart.line(dataAll);
+
+        chartAll.title("Chromatopelma all");
+        chartAll.bounds(0, 0, "50%", "100%");
+        chartAll.yAxis().title('Temp');
+        chartAll.yScale().minimum(20);
+        chartAll.yScale().maximum(28);
+        chartAll.yScale().ticks().interval(1);
+        chartAll.yGrid().enabled(true);
+        chartAll.xAxis().title().enabled(false);
+        chartAll.xAxis().labels().enabled(false);
+        chartAll.xGrid().enabled(false);
+
+        chartAll.container(stage);
+        chartAll.draw();
+
       });
-    </script>
-</head>
-<body>
-    <div id="container" style="width: 100%; height: 400px;"></div>
-    <body style="background-color:darkgrey;">
-    <img src="./images/view.jpg" alt="Pajonk">
-</body>
-</html>
 
+
+      anychart.data.loadCsvFile("./log/last10.csv", function (dataLast10) {
+
+        var chartLast10 = anychart.line(dataLast10);
+
+        chartLast10.title("Chromatopelma last 10");
+        chartLast10.bounds("50%", 0, "50%", "100%");
+        chartLast10.yAxis().title('Temp');
+        chartLast10.yScale().minimum(20);
+        chartLast10.yScale().maximum(28);
+        chartLast10.yScale().ticks().interval(1);
+        chartLast10.yGrid().enabled(true);
+        chartLast10.xAxis().title('Date');
+        chartLast10.xAxis().labels().width(90);
+        chartLast10.xAxis().labels().wordWrap("break-word");
+        chartLast10.xGrid().enabled(false);
+
+        chartLast10.container(stage);
+        chartLast10.draw();
+
+      });
+
+    });
+
+  </script>
+
+</head>
+
+<body style="background-color:darkgrey;">
+
+  <div id="container" style="width: 100%; height: 400px;"></div>
+
+  <img src="./images/view.jpg" alt="Pajonk" style="float:right;width:400px;height:400px;">
+
+</body>
+
+</html>
