@@ -1,5 +1,5 @@
 [Unit]
-Description=Daemon for taking pictures for TerraControl
+Description=TerraControl camera shot daemon
 After=syslog.target
 StartLimitIntervalSec=10
 
@@ -11,4 +11,4 @@ Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
-Alias=terraControl.service
+Alias=terraShot.service
