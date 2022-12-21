@@ -2,15 +2,15 @@
 
 
 
-reportFile="/var/log/terraControl.log"
+statusFile="/var/log/terraControl.status"
 checkInterval=20
 
-if [[ -f "$reportFile" ]]
+if [[ -f "$statusFile" ]]
 
 	then
 
-		touch /var/log/terraControl.log	
-		echo "0" > "$reportFile"
+		touch "$statusFile"	
+		echo "0" > "$statusFile"
 
 fi
 
@@ -18,7 +18,7 @@ while true
 
 	do
 
-		failedChecks=`head -n1 "$reportFile"`
+		failedChecks=`head -n1 "$statusFile"`
 
 		if [[ "$failedChecks" -ge 2 ]]
 
@@ -26,7 +26,7 @@ while true
 
 				systemctl restart terraControl.service
 				failedChecks=0
-				echo "$failedChecks" > "$reportFile"
+				echo "$failedChecks" > "$statusFile"
 				sleep 5
 
 		fi
@@ -38,11 +38,11 @@ while true
 			then
 
 				failedChecks=$(("$failedChecks"+1))
-				echo -e "$failedChecks" > "$reportFile"
+				echo -e "$failedChecks" > "$statusFile"
 
 			else
 
-				echo "0" > "$reportFile"
+				echo "0" > "$statusFile"
 
 		fi
 
