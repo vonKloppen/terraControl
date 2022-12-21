@@ -5,7 +5,7 @@ StartLimitIntervalSec=10
 
 [Service]
 Type=simple
-ExecStart=/usr/sbin/terraCheck.sh
+ExecStart=/usr/sbin/terraWatchdog.sh
 KillMode=process
 Restart=on-failure
 
