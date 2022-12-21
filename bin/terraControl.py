@@ -2,7 +2,7 @@
 
 from time import localtime,  strftime, sleep
 from gpiozero import LED
-import w1thermsensor
+import w1thermsensor, syslog
 
 heater = LED(18)
 sensor = w1thermsensor.W1ThermSensor()
@@ -20,9 +20,11 @@ maxTemp = 26
 
 def heatingON():
 
+  syslog.syslog(syslog.LOG_INFO, "Turning heater ON")
   heater.on()
   sleep(heatingTime)
 
+  syslog.syslog(syslog.LOG_INFO, "Turning heater OFF")
   heater.off()
   sleep(heatingTimeout)
 
