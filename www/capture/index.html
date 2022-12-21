@@ -1,28 +1,46 @@
 <!doctype html>
 
-  <html lang="en-US">
+<html lang="en-US">
 
-    <head>
+<head>
 
-      <meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-      <script>
+</head>
 
-        function checkInput() {
+<body>
 
-          document.getElementById("form1").value = "Paragraph changed.";
+    <form>
 
-        }
+        <input type="radio" id="light0" name="lightControl" value="lightOFF" checked>
+        <label for="light0">Light Off</label></br>
 
-      </script>
+        <input type="radio" id="light1" name="lightControl" value="lightON">
+        <label for="light1">Light On</label></br>
+        <input type="text" id="field1">
+    </form>
 
-    </head>
+    </br>
 
-    <body>
+    <button id="buttonGO">Go</button>
 
-      <input type="text" id="form1" value="Say friend and enter..">
-      <button type="button" onclick="checkInput()">Go</button>
+    <script>
 
-    </body>
+        const execSync = require('child_process').execSync;
+        const buttonGO = document.querySelector('#buttonGO');
+        const radioButtons = document.querySelectorAll('input[name="lightControl"]');
+        buttonGO.addEventListener("click", () => {
+            let lightSelect;
+            for (const radioButton of radioButtons) {
+                if (radioButton.checked) {
+                    document.getElementById("field1").value = radioButton.value;
+                    break;
+                }
+            }
+        });
 
-  </html>
+    </script>
+    
+</body>
+
+</html>
