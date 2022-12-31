@@ -40,7 +40,7 @@ while True:
   temperature = sensor.get_temperature()
 
   f = open(logFile, "a")
-  f.writelines(currentTime + ',' + str(temperature) + '\n')
+  f.writelines(currentDate + ' ' + currentTime + ',' + str(temperature) + '\n')
   f.close()
 
 ## Whipe stripted log file.
