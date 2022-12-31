@@ -14,6 +14,7 @@ heatingTimeout = 10
 overheatTimeout = 60
 logFile = "/mnt/terraControl/all.csv"
 logFileLast10 = "/mnt/terraControl/last10.csv"
+logFileLast24h = "/mnt/terraControl/last24h.csv"
 dayTemp = 27
 nightTemp = 24
 maxTemp = dayTemp
@@ -45,8 +46,8 @@ while True:
 
 ## Whipe stripted log file.
 
-  f_strip = open(logFileLast10, "w")
-  f_strip.close()
+  f_last10 = open(logFileLast10, "w")
+  f_last10.close()
 
 ##
 
@@ -54,9 +55,15 @@ while True:
  
   for line in (f_full.readlines() [-10:]):
 
-    f_strip = open(logFileLast10, "a")
-    f_strip.writelines(line)
-    f_strip.close()
+    f_last10 = open(logFileLast10, "a")
+    f_last10.writelines(line)
+    f_last10.close()
+
+  for line in (f_full.readlines() [-1440:]):
+
+    f_last24h = open(logFileLast24h, "a")
+    f_last24h.writelines(line)
+    f_last24h.close()
 
   f_full.close()
 
