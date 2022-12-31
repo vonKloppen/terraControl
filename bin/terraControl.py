@@ -18,7 +18,7 @@ dayTemp = 27
 nightTemp = 24
 maxTemp = dayTemp
 dayStart = "08:00"
-dayEnd  = "18:00"
+nightStart  = "18:00"
 
 ###
 
