@@ -1,11 +1,12 @@
 # **What is it precious?**
 
-It's a simple "daemon" for monitoring temperature in terrarium.
+It's a simple "daemon" for monitoring temperature in terrarium, using ds18b20 sensor and Raspberry PI Zero.
 It creates log as csv file.
 
 www folder contains stupidly simple html page with graphs using AnyChart scripts (https://www.anychart.com/)
 
 ***Be aware that this is highly customized sollution and a work in progress and you should probably not use this code for controling temperature in terrarium with live animals!***
+
 
 ## **TO-DO**
 

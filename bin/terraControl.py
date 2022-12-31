@@ -14,7 +14,11 @@ heatingTimeout = 10
 overheatTimeout = 60
 logFile = "/mnt/terraControl/all.csv"
 logFileLast10 = "/mnt/terraControl/last10.csv"
-maxTemp = 26
+dayTemp = 27
+nightTemp = 24
+maxTemp = dayTemp
+dayStart = "08:00"
+dayEnd  = "18:00"
 
 ###
 
@@ -31,7 +35,8 @@ def heatingON():
 
 while True:
 
-  currentTime = strftime("%Y-%m-%d %H:%M", localtime())
+  currentTime = strftime("%H:%M", localtime())
+  currentDate = strftime("%Y-%m-%d", localtime())
   temperature = sensor.get_temperature()
 
   f = open(logFile, "a")
@@ -54,6 +59,16 @@ while True:
     f_strip.close()
 
   f_full.close()
+
+
+  if (currentTime >= dayStart) and (currentTime < nightStart):
+
+    maxTemp = dayTemp
+
+  else:
+
+    maxTemp = nightTemp
+
 
   if temperature < maxTemp:
 

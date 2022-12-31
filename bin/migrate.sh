@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Migrate from csv data to sqlite + add epoch
+
+
 if [[ -z "$1" || -z "$2" ]]
 
     then
