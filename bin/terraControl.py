@@ -44,10 +44,13 @@ while True:
   f.writelines(currentDate + ' ' + currentTime + ',' + str(temperature) + '\n')
   f.close()
 
-## Whipe stripted log file.
+## Whipe stripted log files.
 
   f_last10 = open(logFileLast10, "w")
   f_last10.close()
+
+  f_last24h = open(logFileLast24h, "w")
+  f_last24h.close()
 
 ##
 
