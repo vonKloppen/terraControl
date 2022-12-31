@@ -44,10 +44,13 @@ while True:
   f.writelines(currentDate + ' ' + currentTime + ',' + str(temperature) + '\n')
   f.close()
 
-## Whipe stripted log file.
+## Whipe stripted log files.
 
   f_last10 = open(logFileLast10, "w")
   f_last10.close()
+
+  f_last24h = open(logFileLast24h, "w")
+  f_last24h.close()
 
 ##
 
@@ -59,7 +62,14 @@ while True:
     f_last10.writelines(line)
     f_last10.close()
 
-  for line in (f_full.readlines() [-1440:]):
+# For some reason full log file must be closed and reopened again for second loop
+
+  f_full.close()
+
+
+  f_full = open(logFile, "r")
+
+  for line in (f_full.readlines() [-1100:]):
 
     f_last24h = open(logFileLast24h, "a")
     f_last24h.writelines(line)
