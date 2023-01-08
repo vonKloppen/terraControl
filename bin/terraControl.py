@@ -44,39 +44,9 @@ while True:
   f.writelines(currentDate + ' ' + currentTime + ',' + str(temperature) + '\n')
   f.close()
 
-## Whipe stripted log files.
+  os.system('tail -n10 %s >%s' %(logFile,logFileLast10))
 
-  f_last10 = open(logFileLast10, "w")
-  f_last10.close()
-
-  f_last24h = open(logFileLast24h, "w")
-  f_last24h.close()
-
-##
-
-  f_full = open(logFile, "r")
- 
-  for line in (f_full.readlines() [-10:]):
-
-    f_last10 = open(logFileLast10, "a")
-    f_last10.writelines(line)
-    f_last10.close()
-
-# For some reason full log file must be closed and reopened again for second loop
-
-  f_full.close()
-
-
-  f_full = open(logFile, "r")
-
-  for line in (f_full.readlines() [-1100:]):
-
-    f_last24h = open(logFileLast24h, "a")
-    f_last24h.writelines(line)
-    f_last24h.close()
-
-  f_full.close()
-
+  os.system('tail -n1100 %s > %s' %(logFile,logFileLast24h))
 
   if (currentTime >= dayStart) and (currentTime < nightStart):
 
