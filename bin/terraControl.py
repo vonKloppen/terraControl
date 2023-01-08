@@ -2,7 +2,7 @@
 
 from time import localtime,  strftime, sleep
 from gpiozero import LED
-import w1thermsensor, syslog
+import w1thermsensor, syslog, os
 
 heater = LED(18)
 sensor = w1thermsensor.W1ThermSensor()
