@@ -6,7 +6,6 @@ from time import localtime, strftime, sleep
 
 ### VARIABLES ###
 
-light = LED(24)
 interval_day = 600
 interval_night = 600
 dayStart = "08:00"
@@ -28,12 +27,8 @@ while True:
 
   if (currentTime >= dayStart) and (currentTime < nightStart):
 
-    syslog.syslog(syslog.LOG_INFO, "Turning light ON")
-    light.on()
     syslog.syslog(syslog.LOG_INFO, "Taking picture")
     os.system('raspistill -q %s -br %s -rot %s -roi %s -w %s -h %s -n -o %s' %(picQuality, picBrightness, picRotation, picRoi, picWidth, picHight, picOutput))
-    syslog.syslog(syslog.LOG_INFO, "Turning light OFF")
-    light.off()
     sleep(interval_day)
 
   else:

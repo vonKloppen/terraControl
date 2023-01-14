@@ -1,10 +1,11 @@
 #!/bin/python3
 
-from time import localtime,  strftime, sleep
+from time import localtime, strftime, sleep
 from gpiozero import LED
 import w1thermsensor, syslog, os
 
 heater = LED(18)
+light = LED(24)
 sensor = w1thermsensor.W1ThermSensor()
 
 ### VARIABLES ###
@@ -51,11 +52,12 @@ while True:
   if (currentTime >= dayStart) and (currentTime < nightStart):
 
     maxTemp = dayTemp
+    light.on()
 
   else:
 
     maxTemp = nightTemp
-
+    light.off()
 
   if temperature < maxTemp:
 
