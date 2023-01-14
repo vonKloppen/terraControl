@@ -53,7 +53,7 @@ while True:
 
   os.system('tail -n10 %s >%s' %(logFile,logFileLast10))
 
-  os.system('tail -n1100 %s > %s' %(logFile,logFileLast24h))
+  os.system('tail -n1180 %s > %s' %(logFile,logFileLast24h))
 
   if (currentTime >= dayStart) and (currentTime < nightStart):
 
