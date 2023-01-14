@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
 from time import localtime, strftime, sleep
 from gpiozero import LED

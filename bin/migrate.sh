@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Migrate from csv data to sqlite + add epoch
 
