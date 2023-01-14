@@ -1,48 +1,56 @@
 #!/bin/bash
 
+### Initial values
 
+failedChecks=0
 
-statusFile="/var/log/terraControl.status"
+### VARIABLES
+
 checkInterval=20
+checkFailTreshold=3
 
-if [[ -f "$statusFile" ]]
+logTAG="terraWatchdog"
 
-	then
+controlService="terraControl.service"
 
-		touch "$statusFile"	
-		echo "0" > "$statusFile"
-
-fi
 
 while true
 
 	do
 
-		failedChecks=`head -n1 "$statusFile"`
-
-		if [[ "$failedChecks" -ge 2 ]]
-
-			then
-
-				systemctl restart terraControl.service
-				failedChecks=0
-				echo "$failedChecks" > "$statusFile"
-				sleep 5
-
-		fi
-
-		check=`systemctl is-active terraControl.service`
+		check=`systemctl is-active "$controlService"`
 
 		if [[ "$check" != "active" ]]
 
 			then
 
 				failedChecks=$(("$failedChecks"+1))
-				echo -e "$failedChecks" > "$statusFile"
+
+				if [[ "$failedChecks" -ge "$checkFailTreshold" ]]
+
+					then
+
+						logger -t "$logTAG" "terraControl check failed "$checkFailTreshold" times. Restarting service.."
+						systemctl restart "$controlService"
+
+
+					else
+
+						logger -t "$logTAG" "terraControl check failed. Count="$failedChecks""
+
+				fi
 
 			else
 
-				echo "0" > "$statusFile"
+				if [[ "$failedChecks" != 0 ]]
+
+					then
+
+						logger -t "$logTAG" "terraControl is working again"
+
+				fi
+
+				failedChecks=0
 
 		fi
 
