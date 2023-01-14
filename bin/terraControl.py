@@ -13,14 +13,19 @@ sensor = w1thermsensor.W1ThermSensor()
 heatingTime = 60
 heatingTimeout = 10
 overheatTimeout = 60
-logFile = "/mnt/terraControl/all.csv"
-logFileLast10 = "/mnt/terraControl/last10.csv"
-logFileLast24h = "/mnt/terraControl/last24h.csv"
+
 dayTemp = 27
 nightTemp = 24
 maxTemp = dayTemp
+
 dayStart = "08:00"
 nightStart  = "18:00"
+
+logFile = "/mnt/terraControl/all.csv"
+logFileLast10 = "/mnt/terraControl/last10.csv"
+logFileLast24h = "/mnt/terraControl/last24h.csv"
+logIdent = "terraControl"
+
 
 ###
 
@@ -33,6 +38,8 @@ def heatingON():
   heater.off()
   syslog.syslog(syslog.LOG_INFO, "Turning heater OFF")
   sleep(heatingTimeout)
+
+syslog.openlog(logIdent)
 
 while True:
 
@@ -52,7 +59,7 @@ while True:
 
     if (maxTemp == nightTemp):
 
-      syslog.syslog(syslog.LOG_INFO, "Turning light ON")
+      syslog.syslog(syslog.LOG_INFO, "Daytime, turning lights ON")
 
     light.on()
     maxTemp = dayTemp
@@ -61,7 +68,7 @@ while True:
 
     if (maxTemp == dayTemp):
 
-      syslog.syslog(syslog.LOG_INFO, "Turning light OFF")
+      syslog.syslog(syslog.LOG_INFO, "Nighttime - turning lights OFF")
 
     light.off()
     maxTemp = nightTemp
@@ -72,6 +79,10 @@ while True:
 
   else:
 
+    syslog.syslog(syslog.LOG_INFO, "MAX temperature reached. Sleeping..")
     heater.off()
     sleep(overheatTimeout)
+
+syslog.closelog()
+heater.off()
 
