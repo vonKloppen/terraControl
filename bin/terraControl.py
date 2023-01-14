@@ -26,14 +26,15 @@ nightStart  = "18:00"
 
 def heatingON():
 
+  syslog.openlog(terraControl)
   syslog.syslog(syslog.LOG_INFO, "Turning heater ON")
   heater.on()
   sleep(heatingTime)
 
-  syslog.syslog(syslog.LOG_INFO, "Turning heater OFF")
   heater.off()
+  syslog.syslog(syslog.LOG_INFO, "Turning heater OFF")
+  syslog.closelog()
   sleep(heatingTimeout)
-
 
 while True:
 
@@ -51,13 +52,25 @@ while True:
 
   if (currentTime >= dayStart) and (currentTime < nightStart):
 
+    if (maxTemp=nightTemp):
+
+      syslog.openlog(terraControl)
+      syslog.syslog(syslog.LOG_INFO, "Turning light ON")
+      syslog.closelog()
+      light.on()
+
     maxTemp = dayTemp
-    light.on()
 
   else:
 
+    if (maxTemp=dayTemp):
+
+      syslog.openlog(terraControl)
+      syslog.syslog(syslog.LOG_INFO, "Turning light OFF")
+      syslog.closelog()
+      light.off()
+
     maxTemp = nightTemp
-    light.off()
 
   if temperature < maxTemp:
 
