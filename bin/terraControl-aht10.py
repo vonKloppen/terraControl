@@ -130,7 +130,7 @@ while True:
     
   except:
     
-    msg = f"Error opening logfile {logFileTemp}. Quitting.."
+    msg = f"Error opening logfile {logFileTemp} Quitting.."
     syslog.syslog(syslog.LOG_INFO, msg)
     sys.exit()
 
@@ -145,7 +145,7 @@ while True:
 
   except:
 
-    msg = f"Error opening logfile {logFileHum}. Quitting.."
+    msg = f"Error opening logfile {logFileHum} Quitting.."
     syslog.syslog(syslog.LOG_INFO, msg)
     sys.exit()
 
@@ -180,7 +180,7 @@ while True:
     light.off()
     maxTemp = nightTemp
 
-  if temperature < maxTemp:
+  if float(temperature) < maxTemp:
 
     heatingON()
 
