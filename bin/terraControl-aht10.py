@@ -55,11 +55,11 @@ def heatingON():
   for x in range(0,heatingCycle):
 
     heater.on()
-    sleep(heatingTime)
+    time.sleep(heatingTime)
     heater.off()
 
   syslog.syslog(syslog.LOG_INFO, "Turning heating cycle OFF")
-  sleep(heatingTimeout)
+  time.sleep(heatingTimeout)
 
 syslog.openlog(logIdent)
 
@@ -128,7 +128,7 @@ while True:
 
     syslog.syslog(syslog.LOG_INFO, "MAX temperature reached. Sleeping..")
     heater.off()
-    sleep(overheatTimeout)
+    time.sleep(overheatTimeout)
 
 syslog.closelog()
 heater.off()
