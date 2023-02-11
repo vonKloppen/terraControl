@@ -124,13 +124,35 @@ while True:
   humidity = f"{convHum}"
   temperature = f"{convTemp:.1f}"
 
-  f = open(logFileTemp, "a")
-  f.writelines(currentDate + ' ' + currentTime + ',' + str(temperature) + '\n')
-  f.close()
+  try:
+    
+    f = open(logFileTemp, "a")
+    
+  except:
+    
+    msg = f"Error opening logfile {logFileTemp}. Quitting.."
+    syslog.syslog(syslog.LOG_INFO, msg)
+    sys.exit()
 
-  f = open(logFileHum, "a")
-  f.writelines(currentDate + ' ' + currentTime + ',' + str(humidity) + '\n')
-  f.close()
+  else:
+    
+    f.writelines(currentDate + ' ' + currentTime + ',' + str(temperature) + '\n')
+    f.close()
+
+  try:
+
+    f = open(logFileHum, "a")
+
+  except:
+
+    msg = f"Error opening logfile {logFileHum}. Quitting.."
+    syslog.syslog(syslog.LOG_INFO, msg)
+    sys.exit()
+
+  else:
+
+    f.writelines(currentDate + ' ' + currentTime + ',' + str(humidity) + '\n')
+    f.close()
 
   os.system('tail -n10 %s >%s' %(logFileTemp,logFileTempLast10))
 
