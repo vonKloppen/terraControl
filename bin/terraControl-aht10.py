@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 import smbus
-import time
+from time import localtime, strftime, sleep
 from gpiozero import LED
-import syslog, os
+import syslog, os, sys, signal
 
-## AHT10 CONFIG
+### AHT10 CONFIG ###
 
 bus = smbus.SMBus(1)
 
@@ -17,10 +17,14 @@ offsetInit = 0xE1
 offsetMeasure = 0xAC
 i2cSleep = 0.2
 
-## HEATER AND LIGHT CONFIG
+###
+
+### HEATER AND LIGHT CONFIG ###
 
 heater = LED(18)
 light = LED(24)
+
+###
 
 ### VARIABLES ###
 
@@ -44,6 +48,36 @@ logFileHumLast10 = "/mnt/terraControl/humLast10.csv"
 logFileHumLast24h = "/mnt/terraControl/humLast24h.csv"
 logIdent = "terraControl"
 
+###
+
+## SIGNAL HANDLING ###
+
+def terminate(signalNumber, frame):
+
+  syslog.syslog(syslog.LOG_INFO, "SIGTERM received. Terminating..")
+  syslog.syslog(syslog.LOG_INFO, "Turning heater OFF")
+  heater.off()
+  syslog.syslog(syslog.LOG_INFO, "Turning lights OFF")
+  light.off()
+  sys.exit()
+
+
+if __name__ == '__main__':
+
+  signal.signal(signal.SIGHUP, signal.SIG_IGN)
+  signal.signal(signal.SIGINT, signal.SIG_IGN)
+  signal.signal(signal.SIGQUIT, signal.SIG_IGN)
+  signal.signal(signal.SIGILL, signal.SIG_IGN)
+  signal.signal(signal.SIGTRAP, signal.SIG_IGN)
+  signal.signal(signal.SIGABRT, signal.SIG_IGN)
+  signal.signal(signal.SIGBUS, signal.SIG_IGN)
+  signal.signal(signal.SIGFPE, signal.SIG_IGN)
+  signal.signal(signal.SIGUSR1, signal.SIG_IGN)
+  signal.signal(signal.SIGSEGV, signal.SIG_IGN)
+  signal.signal(signal.SIGUSR2, signal.SIG_IGN)
+  signal.signal(signal.SIGPIPE, signal.SIG_IGN)
+  signal.signal(signal.SIGALRM, signal.SIG_IGN)
+  signal.signal(signal.SIGTERM, terminate)
 
 ###
 
@@ -55,17 +89,21 @@ def heatingON():
   for x in range(0,heatingCycle):
 
     heater.on()
-    time.sleep(heatingTime)
+    sleep(heatingTime)
     heater.off()
 
   syslog.syslog(syslog.LOG_INFO, "Turning heating cycle OFF")
-  time.sleep(heatingTimeout)
+  sleep(heatingTimeout)
 
 syslog.openlog(logIdent)
 
 ## INIT SENSOR
+
 bus.write_i2c_block_data(i2cAddr, offsetInit, cmdInit)
-time.sleep(i2cSleep)
+sleep(i2cSleep)
+
+###
+
 
 while True:
 
@@ -73,7 +111,7 @@ while True:
   currentDate = strftime("%Y-%m-%d", localtime())
 
   bus.write_i2c_block_data(i2cAddr, offsetMeasure, cmdMeasure)
-  time.sleep(i2cSleep)
+  sleep(i2cSleep)
 
   data = bus.read_i2c_block_data(i2cAddr,0x00)
 
@@ -128,7 +166,7 @@ while True:
 
     syslog.syslog(syslog.LOG_INFO, "MAX temperature reached. Sleeping..")
     heater.off()
-    time.sleep(overheatTimeout)
+    sleep(overheatTimeout)
 
 syslog.closelog()
 heater.off()
