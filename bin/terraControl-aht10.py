@@ -29,7 +29,7 @@ light = LED(24)
 ### VARIABLES ###
 
 heatingTime = 5
-heatingTimeout = 5
+heatingTimeout = 10
 heatingCycle = 6
 overheatTimeout = 60
 
