@@ -11,6 +11,7 @@ interval_night = 600
 dayStart = "08:00"
 nightStart  = "18:00"
 
+picAWB = "tungsten"
 picQuality = 95
 picBrightness = 50
 picRotation = 270
@@ -28,7 +29,7 @@ while True:
   if (currentTime >= dayStart) and (currentTime < nightStart):
 
     syslog.syslog(syslog.LOG_INFO, "Taking picture")
-    os.system('raspistill -q %s -br %s -rot %s -roi %s -w %s -h %s -n -o %s' %(picQuality, picBrightness, picRotation, picRoi, picWidth, picHight, picOutput))
+    os.system('raspistill -awb %s -q %s -br %s -rot %s -roi %s -w %s -h %s -n -o %s' %(picAWB, picQuality, picBrightness, picRotation, picRoi, picWidth, picHight, picOutput))
     sleep(interval_day)
 
   else:
