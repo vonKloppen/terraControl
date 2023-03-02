@@ -16,7 +16,8 @@
 
     anychart.onDocumentReady(function () {
 
-      var stage = anychart.graphics.create("container");
+      var stage1 = anychart.graphics.create("container1");
+      var stage2 = anychart.graphics.create("container2");
 
       anychart.theme(anychart.themes.darkTurquoise);
 
@@ -25,7 +26,7 @@
         var chartTempLast24h = anychart.line(dataAll);
 
         chartTempLast24h.title("Chromatopelma temperature last 24h");
-        chartTempLast24h.bounds(0, 0, "25%", "100%");
+        chartTempLast24h.bounds(0, 0, "50%", "100%");
         chartTempLast24h.yAxis().title('Temp');
         chartTempLast24h.yScale().minimum(20);
         chartTempLast24h.yScale().maximum(28);
@@ -35,7 +36,7 @@
         chartTempLast24h.xAxis().labels().enabled(false);
         chartTempLast24h.xGrid().enabled(false);
 
-        chartTempLast24h.container(stage);
+        chartTempLast24h.container(stage1);
         chartTempLast24h.draw();
 
       });
@@ -46,7 +47,7 @@
         var chartTempLast10 = anychart.line(dataLast10);
 
         chartTempLast10.title("Chromatopelma temperature last 10");
-        chartTempLast10.bounds("25%", 0, "25%", "100%");
+        chartTempLast10.bounds("50%", 0, "50%", "100%");
         chartTempLast10.yAxis().title('Temp');
         chartTempLast10.yScale().minimum(20);
         chartTempLast10.yScale().maximum(28);
@@ -57,17 +58,18 @@
         chartTempLast10.xAxis().labels().wordWrap("break-word");
         chartTempLast10.xGrid().enabled(false);
 
-        chartTempLast10.container(stage);
+        chartTempLast10.container(stage1);
         chartTempLast10.draw();
 
       });
+
 
       anychart.data.loadCsvFile("./log/humLast24h.csv", function (dataLast10) {
 
         var chartHumLast24h = anychart.line(dataLast10);
 
         chartHumLast24h.title("Chromatopelma humidity last 24h");
-        chartHumLast24h.bounds("50%", 0, "25%", "100%");
+        chartHumLast24h.bounds(0, 0, "50%", "100%");
         chartHumLast24h.yAxis().title('Temp');
         chartHumLast24h.yScale().minimum(0);
         chartHumLast24h.yScale().maximum(100);
@@ -78,7 +80,7 @@
         chartHumLast24h.xAxis().labels().wordWrap("break-word");
         chartHumLast24h.xGrid().enabled(false);
 
-        chartHumLast24h.container(stage);
+        chartHumLast24h.container(stage2);
         chartHumLast24h.draw();
 
       });
@@ -88,7 +90,7 @@
         var chartHumLast10 = anychart.line(dataLast10);
 
         chartHumLast10.title("Chromatopelma humidity last 10");
-        chartHumLast10.bounds("75%", 0, "25%", "100%");
+        chartHumLast10.bounds("50%", 0, "50%", "100%");
         chartHumLast10.yAxis().title('Temp');
         chartHumLast10.yScale().minimum(0);
         chartHumLast10.yScale().maximum(100);
@@ -99,12 +101,13 @@
         chartHumLast10.xAxis().labels().wordWrap("break-word");
         chartHumLast10.xGrid().enabled(false);
 
-        chartHumLast10.container(stage);
+        chartHumLast10.container(stage2);
         chartHumLast10.draw();
 
       });
 
     });
+
 
   </script>
 
@@ -112,14 +115,16 @@
 
 <body style="background-color:darkgrey;">
 
-  <div id="container" style="width: 100%; height: 400px;"></div>
+  <div id="container1" style="width: 100%; height: 400px;"></div>
+  <div id="container2" style="width: 100%; height: 400px;"></div>
 
   <div>
 
-    <img src="./images/view.jpg" alt="Tu powinien być pająk, chyba że gdzieś spierdzielił." style="float:right;width:400px;height:400px;">
+    <img src="./images/view.jpg" alt="Tu powinien być pająk, chyba że gdzieś spierdzielił."
+      title="Tu powinien być pająk, chyba że gdzieś spierdzielił" style="width:500px;height:500px;">
 
   </div>
-  
+
 </body>
 
 </html>
