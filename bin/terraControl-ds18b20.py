@@ -45,7 +45,15 @@ while True:
 
   currentTime = strftime("%H:%M", localtime())
   currentDate = strftime("%Y-%m-%d", localtime())
-  temperature = sensor.get_temperature()
+  
+  try:
+    
+    temperature = sensor.get_temperature()
+
+  except:
+
+    syslog.syslog(syslog.LOG_INFO, "Error communicating with sensor. Turning heater off.")
+    heater.off()
 
   f = open(logFile, "a")
   f.writelines(currentDate + ' ' + currentTime + ',' + str(temperature) + '\n')
