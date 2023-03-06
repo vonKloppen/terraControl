@@ -113,16 +113,25 @@ while True:
   bus.write_i2c_block_data(i2cAddr, offsetMeasure, cmdMeasure)
   sleep(i2cSleep)
 
-  data = bus.read_i2c_block_data(i2cAddr,0x00)
+  try:
+    
+    data = bus.read_i2c_block_data(i2cAddr,0x00)
 
-  temp = ((data[3] & 0x0F) << 16) | (data[4] << 8) | data[5]
-  convTemp = ((temp*200) / 1048576) - 50
+  except:
 
-  hum = ((data[1] << 16) | (data[2] << 8) | data[3]) >> 4
-  convHum = int(hum * 100 / 1048576)
-
-  humidity = f"{convHum}"
-  temperature = f"{convTemp:.1f}"
+    heater.off()
+    msg = f"Error communicating with sensor. Turning heater off."
+    syslog.syslog(syslog.LOG_INFO, msg)
+    sys.exit()
+  
+  else:
+    
+    temp = ((data[3] & 0x0F) << 16) | (data[4] << 8) | data[5]
+    convTemp = ((temp*200) / 1048576) - 50
+    hum = ((data[1] << 16) | (data[2] << 8) | data[3]) >> 4
+    convHum = int(hum * 100 / 1048576)
+    humidity = f"{convHum}"
+    temperature = f"{convTemp:.1f}"
 
   try:
     
