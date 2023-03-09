@@ -119,9 +119,9 @@ while True:
 
   except:
 
-    heater.off()
     msg = f"Error communicating with sensor. Turning heater off."
     syslog.syslog(syslog.LOG_INFO, msg)
+    heater.off()
     sys.exit()
   
   else:
@@ -139,8 +139,9 @@ while True:
     
   except:
     
-    msg = f"Error opening logfile {logFileTemp} Quitting.."
+    msg = f"Error opening logfile {logFileTemp} Turning off heater and quitting.."
     syslog.syslog(syslog.LOG_INFO, msg)
+    heater.off()
     sys.exit()
 
   else:
@@ -154,8 +155,9 @@ while True:
 
   except:
 
-    msg = f"Error opening logfile {logFileHum} Quitting.."
+    msg = f"Error opening logfile {logFileHum} Turning off heater and quitting.."
     syslog.syslog(syslog.LOG_INFO, msg)
+    heater.off()
     sys.exit()
 
   else:
