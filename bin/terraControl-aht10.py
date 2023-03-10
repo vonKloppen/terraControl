@@ -110,8 +110,17 @@ while True:
   currentTime = strftime("%H:%M", localtime())
   currentDate = strftime("%Y-%m-%d", localtime())
 
-  bus.write_i2c_block_data(i2cAddr, offsetMeasure, cmdMeasure)
-  sleep(i2cSleep)
+  try:
+
+    bus.write_i2c_block_data(i2cAddr, offsetMeasure, cmdMeasure)
+    sleep(i2cSleep)
+
+  except:
+
+    msg = f"Error communicating with sensor. Turning heater off."
+    syslog.syslog(syslog.LOG_INFO, msg)
+    heater.off()
+    sys.exit()
 
   try:
     
@@ -139,15 +148,16 @@ while True:
     
   except:
     
-    msg = f"Error opening logfile {logFileTemp} Turning off heater and quitting.."
+    msg = f"Error opening logfile {logFileTemp}"
     syslog.syslog(syslog.LOG_INFO, msg)
-    heater.off()
-    sys.exit()
 
   else:
     
     f.writelines(currentDate + ' ' + currentTime + ',' + str(temperature) + '\n')
     f.close()
+    os.system('tail -n10 %s >%s' %(logFileTemp,logFileTempLast10))
+    os.system('tail -n1180 %s > %s' %(logFileTemp,logFileTempLast24h))
+
 
   try:
 
@@ -155,24 +165,17 @@ while True:
 
   except:
 
-    msg = f"Error opening logfile {logFileHum} Turning off heater and quitting.."
+    msg = f"Error opening logfile {logFileHum}"
     syslog.syslog(syslog.LOG_INFO, msg)
-    heater.off()
-    sys.exit()
 
   else:
 
     f.writelines(currentDate + ' ' + currentTime + ',' + str(humidity) + '\n')
     f.close()
+    os.system('tail -n10 %s >%s' %(logFileHum,logFileHumLast10))
+    os.system('tail -n1180 %s > %s' %(logFileHum,logFileHumLast24h))
 
-  os.system('tail -n10 %s >%s' %(logFileTemp,logFileTempLast10))
-
-  os.system('tail -n1180 %s > %s' %(logFileTemp,logFileTempLast24h))
-
-  os.system('tail -n10 %s >%s' %(logFileHum,logFileHumLast10))
-
-  os.system('tail -n1180 %s > %s' %(logFileHum,logFileHumLast24h))
-
+    
   if (currentTime >= dayStart) and (currentTime < nightStart):
 
     if (maxTemp == nightTemp):
