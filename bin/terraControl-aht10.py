@@ -4,6 +4,7 @@ import smbus
 from time import localtime, strftime, sleep
 from gpiozero import LED
 import syslog, os, sys, signal
+from rpi_hardware_pwm import HardwarePWM
 
 ### AHT10 CONFIG ###
 
@@ -19,9 +20,19 @@ i2cSleep = 0.2
 
 ###
 
+### FAN/HARDWARE PWM CONFIG
+
+# echo "dtoverlay=pwm-2chan" >> /boot/config.txt
+# reboot
+# sudo pip3 install rpi-hardware-pwm
+
+fan = HardwarePWM(pwm_channel=0, hz=60)
+
+###
+
 ### HEATER AND LIGHT CONFIG ###
 
-heater = LED(18)
+heater = LED(17)
 light = LED(24)
 
 ###
@@ -86,13 +97,18 @@ def heatingON():
 
   syslog.syslog(syslog.LOG_INFO, "Turning heating cycle ON")
   
+  fan.start(30)
+
   for x in range(0,heatingCycle):
 
     heater.on()
+    fan.start(30)
     sleep(heatingTime)
     heater.off()
+    
 
   syslog.syslog(syslog.LOG_INFO, "Turning heating cycle OFF")
+  fan.stop()
   sleep(heatingTimeout)
 
 syslog.openlog(logIdent)
