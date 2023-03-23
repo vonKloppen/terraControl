@@ -97,12 +97,11 @@ def heatingON():
 
   syslog.syslog(syslog.LOG_INFO, "Turning heating cycle ON")
   
-  fan.start(30)
+  fan.start(35)
 
   for x in range(0,heatingCycle):
 
     heater.on()
-    fan.start(30)
     sleep(heatingTime)
     heater.off()
     
