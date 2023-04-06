@@ -7,6 +7,14 @@ www folder contains stupidly simple html page with graphs using AnyChart scripts
 
 ***Be aware that this is highly customized sollution and a work in progress and you should probably not use this code for controling temperature in terrarium with live animals!***
 
+## **Prerequisites**
+
+**raspi-config - enable i2c**
+**echo "dtoverlay=pwm-2chan" >> /boot/config.txt**
+**reboot**
+**sudo pip3 install rpi-hardware-pwm**
+
+
 
 ## **TO-DO**
 
