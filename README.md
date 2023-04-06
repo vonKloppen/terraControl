@@ -9,11 +9,13 @@ www folder contains stupidly simple html page with graphs using AnyChart scripts
 
 ## **Prerequisites**
 
-**raspi-config - enable i2c**
-**echo "dtoverlay=pwm-2chan" >> /boot/config.txt**
-**reboot**
-**sudo pip3 install rpi-hardware-pwm**
+*raspi-config - enable i2c*
 
+*echo "dtoverlay=pwm-2chan" >> /boot/config.txt*
+
+*reboot*
+
+*sudo pip3 install rpi-hardware-pwm*
 
 
 ## **TO-DO**
