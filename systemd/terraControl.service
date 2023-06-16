@@ -7,6 +7,7 @@ StartLimitIntervalSec=10
 Type=simple
 #ExecStart=/usr/sbin/terraControl-ds18b20.py
 #ExecStart=/usr/sbin/terraControl-aht10.py
+#ExecStart=/usr/sbin/terraControl-sht31.py
 KillMode=process
 Restart=on-failure
 
