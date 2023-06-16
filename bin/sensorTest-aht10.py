@@ -3,6 +3,11 @@
 import smbus
 import time
 
+### AHT10 CONFIG ###
+
+## raspi-config - enable i2c
+## otherwise error will occur "no such file or directory"
+
 bus = smbus.SMBus(1)
 
 cmdInit = [0x08, 0x00]

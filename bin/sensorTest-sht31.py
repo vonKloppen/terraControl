@@ -3,6 +3,11 @@
 import smbus
 import time
 
+### SHT31 CONFIG ###
+s
+## raspi-config - enable i2c
+## otherwise error will occur "no such file or directory"
+
 bus = smbus.SMBus(1)
 
 while True:
