@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+import smbus
+import time
+
+bus = smbus.SMBus(1)
+
+while True:
+
+  bus.write_i2c_block_data(0x44, 0x2C, [0x06])
+
+  time.sleep(0.6)
+
+  data = bus.read_i2c_block_data(0x44, 0x00, 6)
+
+  temperature = data[0] * 256 + data[1]
+  tempConv = -45 + (175 * temp / 65535.0)
+  humConv = 100 * (data[3] * 256 + data[4]) / 65535.0
+
+  print ("Temp: %.2f C" %tempConv)
+  print ("Hum: %.2f %%\n" %humConv)
+
+  time.sleep(10)
