@@ -14,7 +14,7 @@ while True:
   data = bus.read_i2c_block_data(0x44, 0x00, 6)
 
   temperature = data[0] * 256 + data[1]
-  tempConv = -45 + (175 * temp / 65535.0)
+  tempConv = -45 + (175 * temperature / 65535.0)
   humConv = 100 * (data[3] * 256 + data[4]) / 65535.0
 
   print ("Temp: %.2f C" %tempConv)
