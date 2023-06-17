@@ -25,4 +25,4 @@ while True:
   print ("Temp: %.2f C" %tempConv)
   print ("Hum: %.2f %%\n" %humConv)
 
-  time.sleep(10)
+  time.sleep(5)

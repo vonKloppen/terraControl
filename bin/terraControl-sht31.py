@@ -103,7 +103,7 @@ while True:
 
   except:
 
-    msg = f"Error communicating with sensor. Turning heater off."
+    msg = f"Error (E1) communicating with sensor. Turning heater off."
     syslog.syslog(syslog.LOG_INFO, msg)
     heater.off()
     sys.exit()
@@ -114,7 +114,7 @@ while True:
 
   except:
 
-    msg = f"Error communicating with sensor. Turning heater off."
+    msg = f"Error (E2) communicating with sensor. Turning heater off."
     syslog.syslog(syslog.LOG_INFO, msg)
     heater.off()
     sys.exit()
