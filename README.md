@@ -1,7 +1,7 @@
 # **What is it precious?**
 
-It's a simple "daemon" for monitoring temperature in terrarium, using ds18b20 sensor and Raspberry PI Zero.
-It creates log as csv file. Also it can control light.
+It's a simple "daemon" for monitoring temperature and humidity in terrarium, using different sensors and Raspberry PI Zero.
+It creates log as csv file and logs to syslog. Also it can control light and camera.
 
 www folder contains stupidly simple html page with graphs using AnyChart scripts (https://www.anychart.com/)
 
