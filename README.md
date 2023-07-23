@@ -15,7 +15,7 @@ www folder contains stupidly simple html page with graphs using AnyChart scripts
 
 ## **TO-DO**
 
-### Minor:
+### Functionality
 
  - [ ] Move variables to config file - config file parser needed
  - [ ] Add simple www server (python) for displaying chart directly on Raspberry
@@ -28,9 +28,9 @@ www folder contains stupidly simple html page with graphs using AnyChart scripts
  - [x] Logging to syslog
  - [x] Signal handling (systemd)
 
-### Major:
+### Modules
 
-**UPS**
+**UPS:**
 
 - [ ] Monitoring service
 - [ ] Clean shutdown of PI
