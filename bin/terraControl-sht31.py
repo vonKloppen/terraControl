@@ -19,6 +19,7 @@ i2cSleep = 0.5
 
 heater = LED(17)
 light = LED(24)
+fan = LED(14)
 
 ###
 
@@ -48,10 +49,11 @@ logIdent = "terraControl"
 ## SIGNAL HANDLING ###
 
 def terminate(signalNumber, frame):
-
+  
   syslog.syslog(syslog.LOG_INFO, "SIGTERM received. Terminating..")
   syslog.syslog(syslog.LOG_INFO, "Turning heater OFF")
   heater.off()
+  fan.off()
   syslog.syslog(syslog.LOG_INFO, "Turning lights OFF")
   light.off()
   sys.exit()
@@ -81,14 +83,14 @@ def heatingON():
   syslog.syslog(syslog.LOG_INFO, "Turning heating cycle ON")
   
   heater.on()
+  fan.on()
   sleep(heatingTime)
   heater.off()
-    
+  fan.off()
   syslog.syslog(syslog.LOG_INFO, "Turning heating cycle OFF")
   sleep(heatingTimeout)
 
 syslog.openlog(logIdent)
-
 
 
 while True:
@@ -106,6 +108,7 @@ while True:
     msg = f"Error (E1) communicating with sensor. Turning heater off."
     syslog.syslog(syslog.LOG_INFO, msg)
     heater.off()
+    fan.off()
     sys.exit()
 
   try:
@@ -117,6 +120,7 @@ while True:
     msg = f"Error (E2) communicating with sensor. Turning heater off."
     syslog.syslog(syslog.LOG_INFO, msg)
     heater.off()
+    fan.off()
     sys.exit()
 
   else:
@@ -186,9 +190,10 @@ while True:
 
     syslog.syslog(syslog.LOG_INFO, "MAX temperature reached. Sleeping..")
     heater.off()
+    fan.off()
     sleep(overheatTimeout)
 
 syslog.closelog()
 heater.off()
-
+fan.off()
 
