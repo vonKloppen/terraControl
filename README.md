@@ -32,9 +32,11 @@ www folder contains stupidly simple html page with graphs using AnyChart scripts
 
 **UPS:**
 
-- [ ] Monitoring service
-- [ ] Clean shutdown of PI
-- [ ] Logging to syslog
+*As separate daemon: https://github.com/vonKloppen/raspiUPS
+
+- [x] Monitoring service
+- [x] Clean shutdown of PI
+- [x] Logging to syslog
 
 **OLED display:**
 
