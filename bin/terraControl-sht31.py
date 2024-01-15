@@ -3,6 +3,7 @@
 import smbus
 from time import localtime, strftime, sleep
 from gpiozero import LED
+from oled import OLED, Font, Graphics
 import syslog, os, sys, signal
 
 ### SHT31 CONFIG ###
@@ -15,11 +16,30 @@ bus = smbus.SMBus(1)
 i2cAddr = 0x44
 i2cSleep = 0.5
 
+
+### OLED CONFIG ###
+
+dispOn = False
+
+if dispOn:
+
+    disp = OLED(1)
+    disp.begin()
+    disp.initialize()
+
+    disp.set_memory_addressing_mode(0)
+    disp.set_column_address(0, 127)
+    disp.set_page_address(0, 7)
+
+    disp.deactivate_scroll()
+    disp.clear()
+
+
 ### HEATER AND LIGHT CONFIG ###
 
-heater = LED(17)
-light = LED(24)
-fan = LED(14)
+heater = LED(15)
+light = LED(14)
+fan = LED(18)
 
 ###
 
@@ -56,6 +76,11 @@ def terminate(signalNumber, frame):
   fan.off()
   syslog.syslog(syslog.LOG_INFO, "Turning lights OFF")
   light.off()
+
+  if dispOn:
+      
+      updateDisplay("off")
+
   sys.exit()
 
 
@@ -63,7 +88,7 @@ if __name__ == '__main__':
 
   signal.signal(signal.SIGHUP, signal.SIG_IGN)
   signal.signal(signal.SIGINT, signal.SIG_IGN)
-  signal.signal(signal.SIGQUIT, signal.SIG_IGN)
+  signal.signal(signal.SIGQUIT, terminate)
   signal.signal(signal.SIGILL, signal.SIG_IGN)
   signal.signal(signal.SIGTRAP, signal.SIG_IGN)
   signal.signal(signal.SIGABRT, signal.SIG_IGN)
@@ -78,15 +103,50 @@ if __name__ == '__main__':
 
 ###
 
+def updateDisplay(status):
+
+    if status == "off":
+
+        disp.clear()
+        dispFont = Font(4)
+        dispFont.print_string(0, 0, "Off")
+        disp.update()
+        disp.close()
+        return None
+
+
+    disp.clear()
+    dispFont = Font(3)
+    dispFont.print_string(0, 0, "T: " + tempTrimmed)
+    dispFont.print_string(0, 27, "H: " + humTrimmed)
+
+    if status == "h_on":
+
+        dispFont = Font(1)
+        Graphics.draw_circle(4,56,3)
+
+    disp.update()
+
+
 def heatingON():
 
   syslog.syslog(syslog.LOG_INFO, "Turning heating cycle ON")
   
   heater.on()
   fan.on()
+
+  if dispOn:
+
+      updateDisplay("h_on")
+
   sleep(heatingTime)
   heater.off()
   fan.off()
+  
+  if dispOn:
+
+      updateDisplay("none")
+
   syslog.syslog(syslog.LOG_INFO, "Turning heating cycle OFF")
   sleep(heatingTimeout)
 
@@ -131,6 +191,9 @@ while True:
     tempTrimmed = f"{tempConv:.1f}"
     humTrimmed = f"{humConv:.1f}"
 
+    if dispOn:
+
+        updateDisplay("none")
 
   try:
 
