@@ -128,8 +128,8 @@ while True:
     temperature = data[0] * 256 + data[1]
     tempConv = -45 + (175 * temperature / 65535.0)
     humConv = 100 * (data[3] * 256 + data[4]) / 65535.0
-    tempTrimed = f"{tempConv:.1f}"
-    humTrimed = f"{humConv:.1f}"
+    tempTrimmed = f"{tempConv:.1f}"
+    humTrimmed = f"{humConv:.1f}"
 
 
   try:
@@ -143,7 +143,7 @@ while True:
 
   else:
 
-    f.writelines(currentDate + ' ' + currentTime + ',' + str(tempTrimed) + '\n')
+    f.writelines(currentDate + ' ' + currentTime + ',' + str(tempTrimmed) + '\n')
     f.close()
     os.system('tail -n10 %s >%s' %(logFileTemp,logFileTempLast10))
     os.system('tail -n1180 %s > %s' %(logFileTemp,logFileTempLast24h))
@@ -159,7 +159,7 @@ while True:
 
   else:
 
-    f.writelines(currentDate + ' ' + currentTime + ',' + str(humTrimed) + '\n')
+    f.writelines(currentDate + ' ' + currentTime + ',' + str(humTrimmed) + '\n')
     f.close()
     os.system('tail -n10 %s >%s' %(logFileHum,logFileHumLast10))
     os.system('tail -n1180 %s > %s' %(logFileHum,logFileHumLast24h))
