@@ -19,7 +19,7 @@ i2cSleep = 0.5
 
 ### OLED CONFIG ###
 
-dispOn = False
+dispOn = True
 
 if dispOn:
 
@@ -32,7 +32,6 @@ if dispOn:
     disp.set_page_address(0, 7)
 
     disp.deactivate_scroll()
-    disp.clear()
 
 
 ### HEATER AND LIGHT CONFIG ###
@@ -45,7 +44,7 @@ fan = LED(18)
 
 ### VARIABLES ###
 
-heatingTime = 60
+heatingTime = 10
 heatingTimeout = 5
 overheatTimeout = 60
 
@@ -79,7 +78,7 @@ def terminate(signalNumber, frame):
 
   if dispOn:
       
-      updateDisplay("off")
+      updateDisplay("X")
 
   sys.exit()
 
@@ -105,28 +104,22 @@ if __name__ == '__main__':
 
 def updateDisplay(status):
 
-    if status == "off":
-
-        disp.clear()
-        dispFont = Font(4)
-        dispFont.print_string(0, 0, "Off")
-        disp.update()
-        disp.close()
-        return None
-
-
     disp.clear()
     dispFont = Font(3)
-    dispFont.print_string(0, 0, "T: " + tempTrimmed)
-    dispFont.print_string(0, 27, "H: " + humTrimmed)
 
-    if status == "h_on":
+    if status == "X":
 
-        dispFont = Font(1)
-        Graphics.draw_circle(4,56,3)
+        dispFont.print_string(0, 0, "T: NONE")
+        dispFont.print_string(0, 27, "H: NONE")
 
+    else:
+
+        dispFont.print_string(0, 0, "T: " + tempTrimmed)
+        dispFont.print_string(0, 27, "H: " + humTrimmed)
+
+    dispFont = Font(1)
+    dispFont.print_string(73, 57, "Status: " + status)
     disp.update()
-
 
 def heatingON():
 
@@ -137,7 +130,7 @@ def heatingON():
 
   if dispOn:
 
-      updateDisplay("h_on")
+      updateDisplay("H")
 
   sleep(heatingTime)
   heater.off()
@@ -145,7 +138,7 @@ def heatingON():
   
   if dispOn:
 
-      updateDisplay("none")
+      updateDisplay("O")
 
   syslog.syslog(syslog.LOG_INFO, "Turning heating cycle OFF")
   sleep(heatingTimeout)
@@ -169,6 +162,11 @@ while True:
     syslog.syslog(syslog.LOG_INFO, msg)
     heater.off()
     fan.off()
+
+    if dispOn:
+
+        updateDisplay("E")
+
     sys.exit()
 
   try:
@@ -181,6 +179,11 @@ while True:
     syslog.syslog(syslog.LOG_INFO, msg)
     heater.off()
     fan.off()
+
+    if dispOn:
+
+        updateDisplay("E")
+
     sys.exit()
 
   else:
@@ -193,7 +196,7 @@ while True:
 
     if dispOn:
 
-        updateDisplay("none")
+        updateDisplay("R")
 
   try:
 
@@ -254,9 +257,18 @@ while True:
     syslog.syslog(syslog.LOG_INFO, "MAX temperature reached. Sleeping..")
     heater.off()
     fan.off()
+
+    if dispOn:
+
+        updateDisplay("S")
+
     sleep(overheatTimeout)
 
 syslog.closelog()
 heater.off()
 fan.off()
+
+if dispOn:
+
+    disp.close()
 
