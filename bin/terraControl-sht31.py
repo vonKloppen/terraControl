@@ -3,6 +3,7 @@
 import smbus
 from time import localtime, strftime, sleep
 from gpiozero import LED
+from oled import OLED, Font, Graphics
 import syslog, os, sys, signal
 
 ### SHT31 CONFIG ###
@@ -15,16 +16,35 @@ bus = smbus.SMBus(1)
 i2cAddr = 0x44
 i2cSleep = 0.5
 
+
+### OLED CONFIG ###
+
+dispOn = True
+
+if dispOn:
+
+    disp = OLED(1)
+    disp.begin()
+    disp.initialize()
+
+    disp.set_memory_addressing_mode(0)
+    disp.set_column_address(0, 127)
+    disp.set_page_address(0, 7)
+
+    disp.deactivate_scroll()
+
+
 ### HEATER AND LIGHT CONFIG ###
 
-heater = LED(17)
-light = LED(24)
+heater = LED(15)
+light = LED(14)
+fan = LED(18)
 
 ###
 
 ### VARIABLES ###
 
-heatingTime = 60
+heatingTime = 10
 heatingTimeout = 5
 overheatTimeout = 60
 
@@ -48,12 +68,18 @@ logIdent = "terraControl"
 ## SIGNAL HANDLING ###
 
 def terminate(signalNumber, frame):
-
+  
   syslog.syslog(syslog.LOG_INFO, "SIGTERM received. Terminating..")
   syslog.syslog(syslog.LOG_INFO, "Turning heater OFF")
   heater.off()
+  fan.off()
   syslog.syslog(syslog.LOG_INFO, "Turning lights OFF")
   light.off()
+
+  if dispOn:
+      
+      updateDisplay("X")
+
   sys.exit()
 
 
@@ -61,7 +87,7 @@ if __name__ == '__main__':
 
   signal.signal(signal.SIGHUP, signal.SIG_IGN)
   signal.signal(signal.SIGINT, signal.SIG_IGN)
-  signal.signal(signal.SIGQUIT, signal.SIG_IGN)
+  signal.signal(signal.SIGQUIT, terminate)
   signal.signal(signal.SIGILL, signal.SIG_IGN)
   signal.signal(signal.SIGTRAP, signal.SIG_IGN)
   signal.signal(signal.SIGABRT, signal.SIG_IGN)
@@ -76,19 +102,48 @@ if __name__ == '__main__':
 
 ###
 
+def updateDisplay(status):
+
+    disp.clear()
+    dispFont = Font(3)
+
+    if status == "X":
+
+        dispFont.print_string(0, 0, "T: NONE")
+        dispFont.print_string(0, 27, "H: NONE")
+
+    else:
+
+        dispFont.print_string(0, 0, "T: " + tempTrimmed)
+        dispFont.print_string(0, 27, "H: " + humTrimmed)
+
+    dispFont = Font(1)
+    dispFont.print_string(73, 57, "Status: " + status)
+    disp.update()
+
 def heatingON():
 
   syslog.syslog(syslog.LOG_INFO, "Turning heating cycle ON")
   
   heater.on()
+  fan.on()
+
+  if dispOn:
+
+      updateDisplay("H")
+
   sleep(heatingTime)
   heater.off()
-    
+  fan.off()
+  
+  if dispOn:
+
+      updateDisplay("O")
+
   syslog.syslog(syslog.LOG_INFO, "Turning heating cycle OFF")
   sleep(heatingTimeout)
 
 syslog.openlog(logIdent)
-
 
 
 while True:
@@ -106,6 +161,12 @@ while True:
     msg = f"Error (E1) communicating with sensor. Turning heater off."
     syslog.syslog(syslog.LOG_INFO, msg)
     heater.off()
+    fan.off()
+
+    if dispOn:
+
+        updateDisplay("E")
+
     sys.exit()
 
   try:
@@ -117,6 +178,12 @@ while True:
     msg = f"Error (E2) communicating with sensor. Turning heater off."
     syslog.syslog(syslog.LOG_INFO, msg)
     heater.off()
+    fan.off()
+
+    if dispOn:
+
+        updateDisplay("E")
+
     sys.exit()
 
   else:
@@ -124,9 +191,12 @@ while True:
     temperature = data[0] * 256 + data[1]
     tempConv = -45 + (175 * temperature / 65535.0)
     humConv = 100 * (data[3] * 256 + data[4]) / 65535.0
-    tempTrimed = f"{tempConv:.1f}"
-    humTrimed = f"{humConv:.1f}"
+    tempTrimmed = f"{tempConv:.1f}"
+    humTrimmed = f"{humConv:.1f}"
 
+    if dispOn:
+
+        updateDisplay("R")
 
   try:
 
@@ -139,7 +209,7 @@ while True:
 
   else:
 
-    f.writelines(currentDate + ' ' + currentTime + ',' + str(tempTrimed) + '\n')
+    f.writelines(currentDate + ' ' + currentTime + ',' + str(tempTrimmed) + '\n')
     f.close()
     os.system('tail -n10 %s >%s' %(logFileTemp,logFileTempLast10))
     os.system('tail -n1180 %s > %s' %(logFileTemp,logFileTempLast24h))
@@ -155,7 +225,7 @@ while True:
 
   else:
 
-    f.writelines(currentDate + ' ' + currentTime + ',' + str(humTrimed) + '\n')
+    f.writelines(currentDate + ' ' + currentTime + ',' + str(humTrimmed) + '\n')
     f.close()
     os.system('tail -n10 %s >%s' %(logFileHum,logFileHumLast10))
     os.system('tail -n1180 %s > %s' %(logFileHum,logFileHumLast24h))
@@ -186,9 +256,19 @@ while True:
 
     syslog.syslog(syslog.LOG_INFO, "MAX temperature reached. Sleeping..")
     heater.off()
+    fan.off()
+
+    if dispOn:
+
+        updateDisplay("S")
+
     sleep(overheatTimeout)
 
 syslog.closelog()
 heater.off()
+fan.off()
 
+if dispOn:
+
+    disp.close()
 
