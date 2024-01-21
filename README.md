@@ -19,7 +19,7 @@ www folder contains stupidly simple html page with graphs using AnyChart scripts
 
  - [ ] Move variables to config file - config file parser needed
  - [ ] Add simple www server (python) for displaying chart directly on Raspberry
- - [-] ~~Add configuration change from www ( [ ] Add default absolute max temperature and time of heating, [ ] Password protection )~~
+ - [ ] ~~Add configuration change from www ( [ ] Add default absolute max temperature and time of heating, [ ] Password protection )~~
  - [ ] Add option to choose time and date for chart
  - [ ] Add API with status in JSON
  - [x] Convert epoch to human-readeable dates/times
