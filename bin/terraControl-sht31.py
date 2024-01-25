@@ -20,6 +20,8 @@ i2cSleep = 0.5
 ### OLED CONFIG ###
 
 dispOn = True
+contrastDay = 127
+contrastNight = 10
 
 if dispOn:
 
@@ -44,7 +46,7 @@ fan = LED(18)
 
 ### VARIABLES ###
 
-heatingTime = 10
+heatingTime = 60
 heatingTimeout = 5
 overheatTimeout = 60
 
@@ -104,11 +106,12 @@ if __name__ == '__main__':
 
 def updateDisplay(status):
 
-    disp.clear()
     dispFont = Font(3)
+    disp.clear()
 
     if status == "X":
 
+        disp.set_contrast_control(contrastDay)
         dispFont.print_string(0, 0, "T: NONE")
         dispFont.print_string(0, 27, "H: NONE")
 
@@ -237,6 +240,8 @@ while True:
       syslog.syslog(syslog.LOG_INFO, "Daytime, turning lights ON")
 
     light.on()
+    disp.set_contrast_control(contrastDay)
+    disp.update()
     maxTemp = dayTemp
 
   else:
@@ -246,6 +251,8 @@ while True:
       syslog.syslog(syslog.LOG_INFO, "Nighttime - turning lights OFF")
 
     light.off()
+    disp.set_contrast_control(contrastNight)
+    disp.update()
     maxTemp = nightTemp
 
   if float(tempConv) < maxTemp:
