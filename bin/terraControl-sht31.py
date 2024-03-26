@@ -19,7 +19,7 @@ i2cSleep = 0.5
 
 ### OLED CONFIG ###
 
-dispOn = True
+dispOn = False
 contrastDay = 127
 contrastNight = 10
 
@@ -64,6 +64,8 @@ logFileHum = "/mnt/terraControl/humAll.csv"
 logFileHumLast10 = "/mnt/terraControl/humLast10.csv"
 logFileHumLast24h = "/mnt/terraControl/humLast24h.csv"
 logIdent = "terraControl"
+
+logPath = "/mnt/terraControl"
 
 ###
 
@@ -240,8 +242,11 @@ while True:
       syslog.syslog(syslog.LOG_INFO, "Daytime, turning lights ON")
 
     light.on()
-    disp.set_contrast_control(contrastDay)
-    disp.update()
+    if dispOn:
+
+      disp.set_contrast_control(contrastDay)
+      disp.update()
+
     maxTemp = dayTemp
 
   else:
@@ -251,8 +256,12 @@ while True:
       syslog.syslog(syslog.LOG_INFO, "Nighttime - turning lights OFF")
 
     light.off()
-    disp.set_contrast_control(contrastNight)
-    disp.update()
+
+    if dispOn:
+
+      disp.set_contrast_control(contrastNight)
+      disp.update()
+
     maxTemp = nightTemp
 
   if float(tempConv) < maxTemp:
