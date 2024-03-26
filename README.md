@@ -11,6 +11,8 @@ www folder contains stupidly simple html page with graphs using AnyChart scripts
 
 *raspi-config - enable i2c*
 
+*pip3 install smbus mod-oled-128x64*
+
 *reboot*
 
 ## **TO-DO**
