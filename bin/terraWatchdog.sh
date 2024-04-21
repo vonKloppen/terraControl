@@ -2,47 +2,50 @@
 
 ### Initial values
 
-failedChecks=0
+serviceFailedChecks=0
+networkFailedChecks=0
 
 ### VARIABLES
 
 checkInterval=20
-checkFailTreshold=3
+serviceFailTreshold=3
+networkFailTreshold=9
 
 logTAG="terraWatchdog"
 
 controlService="terraControl.service"
+networkHostCheck="__IP_OR_HOSTNAME__"
 
 
 while true
 
 	do
 
-		check=`systemctl is-active "$controlService"`
+		serviceCheck=`systemctl is-active "$controlService"`
 
-		if [[ "$check" != "active" ]]
+		if [[ "$serviceCheck" != "active" ]]
 
 			then
 
-				failedChecks=$(("$failedChecks"+1))
+				serviceFailedChecks=$(("$serviceFailedChecks"+1))
 
-				if [[ "$failedChecks" -ge "$checkFailTreshold" ]]
+				if [[ "$serviceFailedChecks" -ge "$serviceFailTreshold" ]]
 
 					then
 
-						logger -t "$logTAG" "terraControl check failed "$checkFailTreshold" times. Restarting service.."
+						logger -t "$logTAG" "terraControl service check failed "$serviceFailedChecks" times. Restarting service.."
 						systemctl restart "$controlService"
 
 
 					else
 
-						logger -t "$logTAG" "terraControl check failed. Count="$failedChecks""
+						logger -t "$logTAG" "terraControl check failed. Count="$serviceFailedChecks""
 
 				fi
 
 			else
 
-				if [[ "$failedChecks" != 0 ]]
+				if [[ "$serviceFailedChecks" != 0 ]]
 
 					then
 
@@ -50,9 +53,45 @@ while true
 
 				fi
 
-				failedChecks=0
+				serviceFailedChecks=0
 
 		fi
+
+		ping -qc3 "$networkHostCheck" &>/dev/null
+
+		if [[ "$?" -ne 0 ]]
+
+			then
+
+				networkFailedChecks=$(("$networkFailedChecks"+1))
+
+				if [[ "$networkFailedChecks" -ge "$networkFailTreshold" ]]
+
+					then
+
+						logger -t "$logTAG" "terraControl network check failed "$networkFailTreshold" times. Restarting system.."
+						reboot
+
+
+                                        else
+
+                                                logger -t "$logTAG" "terraControl network check failed. Count="$networkFailedChecks""
+
+                                fi
+
+                        else
+
+                                if [[ "$networkFailedChecks" != 0 ]]
+
+                                        then
+
+                                                logger -t "$logTAG" "Network is working again"
+
+                                fi
+
+                                networkFailedChecks=0
+
+                fi
 
 		sleep "$checkInterval"
 
