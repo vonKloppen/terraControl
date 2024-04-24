@@ -84,7 +84,8 @@ def terminate(signalNumber, frame):
       
       updateDisplay("X")
 
-  sys.exit()
+  syslog.closelog()
+  sys.exit(0)
 
 
 if __name__ == '__main__':
@@ -172,7 +173,8 @@ while True:
 
         updateDisplay("E")
 
-    sys.exit()
+    syslog.closelog()
+    sys.exit(1)
 
   try:
 
@@ -189,7 +191,8 @@ while True:
 
         updateDisplay("E")
 
-    sys.exit()
+    syslog.closelog()
+    sys.exit(1)
 
   else:
 
@@ -291,3 +294,4 @@ if dispOn:
 
     disp.close()
 
+syslog.closelog()
