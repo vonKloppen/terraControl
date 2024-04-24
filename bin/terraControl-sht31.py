@@ -164,7 +164,7 @@ while True:
   except:
 
     msg = f"Error (E1) communicating with sensor. Turning heater off."
-    syslog.syslog(syslog.LOG_INFO, msg)
+    syslog.syslog(syslog.LOG_ERR, msg)
     heater.off()
     fan.off()
 
@@ -181,7 +181,7 @@ while True:
   except:
 
     msg = f"Error (E2) communicating with sensor. Turning heater off."
-    syslog.syslog(syslog.LOG_INFO, msg)
+    syslog.syslog(syslog.LOG_ERR, msg)
     heater.off()
     fan.off()
 
@@ -199,6 +199,9 @@ while True:
     tempTrimmed = f"{tempConv:.1f}"
     humTrimmed = f"{humConv:.1f}"
 
+    msg = f"Reading temperature."
+    syslog.syslog(syslog.LOG_INFO, msg)
+
     if dispOn:
 
         updateDisplay("R")
@@ -210,7 +213,7 @@ while True:
   except:
 
     msg = f"Error opening logfile {logFileTemp}"
-    syslog.syslog(syslog.LOG_INFO, msg)
+    syslog.syslog(syslog.LOG_ERR, msg)
 
   else:
 
@@ -226,7 +229,7 @@ while True:
   except:
 
     msg = f"Error opening logfile {logFileHum}"
-    syslog.syslog(syslog.LOG_INFO, msg)
+    syslog.syslog(syslog.LOG_ERR, msg)
 
   else:
 
