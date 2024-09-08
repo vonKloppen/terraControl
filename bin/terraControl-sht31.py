@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import smbus
+import smbus2
 from time import localtime, strftime, sleep
 from gpiozero import LED
 from oled import OLED, Font, Graphics
@@ -11,7 +11,7 @@ import syslog, os, sys, signal
 ## raspi-config - enable i2c
 ## otherwise error will occur "no such file or directory"
 
-bus = smbus.SMBus(1)
+bus = smbus2.SMBus(1)
 
 i2cAddr = 0x44
 i2cSleep = 0.5
