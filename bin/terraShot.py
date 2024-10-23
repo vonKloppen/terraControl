@@ -11,13 +11,8 @@ interval_night = 600
 dayStart = "08:00"
 nightStart  = "18:00"
 
-picAWB = "tungsten"
-picQuality = 95
-picBrightness = 50
-picRotation = 270
-picRoi = "0,0.1,0.8,0.8"
-picWidth = 500
-picHight = 500
+picOutputTemp = "/mnt/terraControl/view.temp"
+picOutputTemp1 = "/mnt/terraControl/view.temp1"
 picOutput = "/mnt/terraControl/view.jpg"
 
 ###
@@ -29,7 +24,9 @@ while True:
   if (currentTime >= dayStart) and (currentTime < nightStart):
 
     syslog.syslog(syslog.LOG_INFO, "Taking picture")
-    os.system('raspistill -awb %s -q %s -br %s -rot %s -roi %s -w %s -h %s -n -o %s' %(picAWB, picQuality, picBrightness, picRotation, picRoi, picWidth, picHight, picOutput))
+    os.system('rpicam-still --awb tungsten --immediate 1 --brightness 0.15 -o %s' %(picOutputTemp))
+    os.system('convert %s -crop 2140x2464+680+0 %s' %(picOutputTemp, picOutputTemp1))
+    os.system('convert %s -rotate 90 %s' %(picOutputTemp1, picOutput))
     sleep(interval_day)
 
   else:
