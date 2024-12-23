@@ -1,0 +1,10 @@
+[Unit]
+Description=Automount for terraControl
+ConditionPathExists=/mnt/terraControl
+
+[Automount]
+Where=/mnt/terraControl
+TimeoutIdleSec=10
+
+[Install]
+WantedBy=multi-user.target

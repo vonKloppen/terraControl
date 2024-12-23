@@ -1,0 +1,11 @@
+[Unit]
+Description=Mount NFS share for terraControl
+
+[Mount]
+What=nas:/opt/nfs/terraControl
+Where=/mnt/terraControl
+Type=nfs
+Options=_netdev,auto
+
+[Install]
+WantedBy=multi-user.target
