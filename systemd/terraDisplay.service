@@ -1,0 +1,14 @@
+[Unit]
+Description=Terrarium temperature control daemon display service
+After=syslog.target
+StartLimitIntervalSec=10
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/terraDisplay-oled_128x64.py
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=terraDisplay.service

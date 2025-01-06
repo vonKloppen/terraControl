@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
-import smbus2
+import smbus2, syslog, os, sys, signal, socket
 from time import localtime, strftime, sleep
 from gpiozero import LED
-from oled import OLED, Font, Graphics
-import syslog, os, sys, signal
+
 
 ### SHT31 CONFIG ###
 
@@ -16,31 +15,32 @@ bus = smbus2.SMBus(1)
 i2cAddr = 0x44
 i2cSleep = 0.5
 
-
-### OLED CONFIG ###
-
-dispOn = False
-contrastDay = 127
-contrastNight = 10
-
-if dispOn:
-
-    disp = OLED(1)
-    disp.begin()
-    disp.initialize()
-
-    disp.set_memory_addressing_mode(0)
-    disp.set_column_address(0, 127)
-    disp.set_page_address(0, 7)
-
-    disp.deactivate_scroll()
-
-
 ### HEATER AND LIGHT CONFIG ###
 
-heater = LED(15)
-light = LED(14)
+heater = LED(17)
+light = LED(4)
 fan = LED(18)
+
+###
+
+### Display config ###
+
+displayEnabled = True
+socketFile = "/run/terraDisplay.socket"
+
+###
+
+### Log config ###
+
+logFileTemp = "/mnt/terraControl/tempAll.csv"
+logFileTempLast10 = "/mnt/terraControl/tempLast10.csv"
+logFileTempLast24h = "/mnt/terraControl/tempLast24h.csv"
+logFileHum = "/mnt/terraControl/humAll.csv"
+logFileHumLast10 = "/mnt/terraControl/humLast10.csv"
+logFileHumLast24h = "/mnt/terraControl/humLast24h.csv"
+logIdent = "terraControl"
+
+logPath = "/mnt/terraControl"
 
 ###
 
@@ -57,35 +57,22 @@ maxTemp = dayTemp
 dayStart = "08:00"
 nightStart  = "18:00"
 
-logFileTemp = "/mnt/terraControl/tempAll.csv"
-logFileTempLast10 = "/mnt/terraControl/tempLast10.csv"
-logFileTempLast24h = "/mnt/terraControl/tempLast24h.csv"
-logFileHum = "/mnt/terraControl/humAll.csv"
-logFileHumLast10 = "/mnt/terraControl/humLast10.csv"
-logFileHumLast24h = "/mnt/terraControl/humLast24h.csv"
-logIdent = "terraControl"
-
-logPath = "/mnt/terraControl"
-
 ###
+
 
 ## SIGNAL HANDLING ###
 
 def terminate(signalNumber, frame):
-  
-  syslog.syslog(syslog.LOG_INFO, "SIGTERM received. Terminating..")
-  syslog.syslog(syslog.LOG_INFO, "Turning heater OFF")
-  heater.off()
-  fan.off()
-  syslog.syslog(syslog.LOG_INFO, "Turning lights OFF")
-  light.off()
 
-  if dispOn:
-      
-      updateDisplay("X")
-
-  syslog.closelog()
-  sys.exit(0)
+    updateDisplay("X","1","0","0")
+    syslog.syslog(syslog.LOG_INFO, "SIGTERM received. Terminating..")
+    syslog.syslog(syslog.LOG_INFO, "Turning heater OFF")
+    heater.off()
+    fan.off()
+    syslog.syslog(syslog.LOG_INFO, "Turning lights OFF")
+    light.off()
+    syslog.closelog()
+    sys.exit(0)
 
 
 if __name__ == '__main__':
@@ -107,191 +94,151 @@ if __name__ == '__main__':
 
 ###
 
-def updateDisplay(status):
-
-    dispFont = Font(3)
-    disp.clear()
-
-    if status == "X":
-
-        disp.set_contrast_control(contrastDay)
-        dispFont.print_string(0, 0, "T: NONE")
-        dispFont.print_string(0, 27, "H: NONE")
-
-    else:
-
-        dispFont.print_string(0, 0, "T: " + tempTrimmed)
-        dispFont.print_string(0, 27, "H: " + humTrimmed)
-
-    dispFont = Font(1)
-    dispFont.print_string(73, 57, "Status: " + status)
-    disp.update()
-
 def heatingON():
 
-  syslog.syslog(syslog.LOG_INFO, "Turning heating cycle ON")
-  
-  heater.on()
-  fan.on()
+    updateDisplay("H", "1", tempTrimmed, humTrimmed)
+    syslog.syslog(syslog.LOG_INFO, "Turning heating cycle ON")
+    heater.on()
+    fan.on()
+    sleep(heatingTime)
+    heater.off()
+    fan.off()
+    updateDisplay("S", "1", tempTrimmed, humTrimmed)
+    syslog.syslog(syslog.LOG_INFO, "Turning heating cycle OFF")
+    sleep(heatingTimeout)
 
-  if dispOn:
+def updateDisplay(status,ident,temp,hum):
 
-      updateDisplay("H")
+    if displayEnabled:
 
-  sleep(heatingTime)
-  heater.off()
-  fan.off()
-  
-  if dispOn:
+        client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
-      updateDisplay("O")
+        try:
+            client.connect(socketFile)
 
-  syslog.syslog(syslog.LOG_INFO, "Turning heating cycle OFF")
-  sleep(heatingTimeout)
+        except:
+            syslog.syslog(syslog.LOG_ERR, "Can't bind to display socket.")
+            client.close()
+
+        else:
+            message = str(status + "," + ident + "," + temp + "," + hum)
+            client.send(message.encode("utf-8")[:1024])
+            client.close()
+
 
 syslog.openlog(logIdent)
 
 
+
 while True:
 
-  currentTime = strftime("%H:%M", localtime())
-  currentDate = strftime("%Y-%m-%d", localtime())
+    currentTime = strftime("%H:%M", localtime())
+    currentDate = strftime("%Y-%m-%d", localtime())
 
-  try:
+    try:
 
-    bus.write_i2c_block_data(i2cAddr, 0x2C, [0x06])
-    sleep(i2cSleep)
+      bus.write_i2c_block_data(i2cAddr, 0x2C, [0x06])
+      sleep(i2cSleep)
 
-  except:
+    except:
 
-    msg = f"Error (E1) communicating with sensor. Turning heater off."
-    syslog.syslog(syslog.LOG_ERR, msg)
-    heater.off()
-    fan.off()
+      updateDisplay("E1", "1", "0", "0")
+      msg = f"Error (E1) communicating with sensor. Turning heater off."
+      syslog.syslog(syslog.LOG_ERR, msg)
+      heater.off()
+      fan.off()
+      syslog.closelog()
+      sys.exit(1)
 
-    if dispOn:
+    try:
 
-        updateDisplay("E")
+      data = bus.read_i2c_block_data(i2cAddr, 0x00, 6)
 
-    syslog.closelog()
-    sys.exit(1)
+    except:
 
-  try:
+      updateDisplay("E2", "1", "0", "0")
+      msg = f"Error (E2) communicating with sensor. Turning heater off."
+      syslog.syslog(syslog.LOG_ERR, msg)
+      heater.off()
+      fan.off()
+      syslog.closelog()
+      sys.exit(1)
 
-    data = bus.read_i2c_block_data(i2cAddr, 0x00, 6)
+    else:
 
-  except:
+      temperature = data[0] * 256 + data[1]
+      tempConv = -45 + (175 * temperature / 65535.0)
+      humConv = 100 * (data[3] * 256 + data[4]) / 65535.0
+      tempTrimmed = f"{tempConv:.1f}"
+      humTrimmed = f"{humConv:.1f}"
+      updateDisplay("R", "1", tempTrimmed, humTrimmed)
+      msg = f"Reading temperature."
+      syslog.syslog(syslog.LOG_INFO, msg)
 
-    msg = f"Error (E2) communicating with sensor. Turning heater off."
-    syslog.syslog(syslog.LOG_ERR, msg)
-    heater.off()
-    fan.off()
+    try:
 
-    if dispOn:
+      f = open(logFileTemp, "a")
 
-        updateDisplay("E")
+    except:
 
-    syslog.closelog()
-    sys.exit(1)
+      msg = f"Error opening logfile {logFileTemp}"
+      syslog.syslog(syslog.LOG_ERR, msg)
 
-  else:
+    else:
 
-    temperature = data[0] * 256 + data[1]
-    tempConv = -45 + (175 * temperature / 65535.0)
-    humConv = 100 * (data[3] * 256 + data[4]) / 65535.0
-    tempTrimmed = f"{tempConv:.1f}"
-    humTrimmed = f"{humConv:.1f}"
+      f.writelines(currentDate + ' ' + currentTime + ',' + str(tempTrimmed) + '\n')
+      f.close()
+      os.system('tail -n10 %s >%s' %(logFileTemp,logFileTempLast10))
+      os.system('tail -n1180 %s > %s' %(logFileTemp,logFileTempLast24h))
 
-    msg = f"Reading temperature."
-    syslog.syslog(syslog.LOG_INFO, msg)
+    try:
 
-    if dispOn:
+      f = open(logFileHum, "a")
 
-        updateDisplay("R")
+    except:
 
-  try:
+      msg = f"Error opening logfile {logFileHum}"
+      syslog.syslog(syslog.LOG_ERR, msg)
 
-    f = open(logFileTemp, "a")
+    else:
 
-  except:
+      f.writelines(currentDate + ' ' + currentTime + ',' + str(humTrimmed) + '\n')
+      f.close()
+      os.system('tail -n10 %s >%s' %(logFileHum,logFileHumLast10))
+      os.system('tail -n1180 %s > %s' %(logFileHum,logFileHumLast24h))
 
-    msg = f"Error opening logfile {logFileTemp}"
-    syslog.syslog(syslog.LOG_ERR, msg)
+    if (currentTime >= dayStart) and (currentTime < nightStart):
 
-  else:
+      if (maxTemp == nightTemp):
 
-    f.writelines(currentDate + ' ' + currentTime + ',' + str(tempTrimmed) + '\n')
-    f.close()
-    os.system('tail -n10 %s >%s' %(logFileTemp,logFileTempLast10))
-    os.system('tail -n1180 %s > %s' %(logFileTemp,logFileTempLast24h))
+        syslog.syslog(syslog.LOG_INFO, "Daytime, turning lights ON")
 
-  try:
+      light.on()
+      maxTemp = dayTemp
 
-    f = open(logFileHum, "a")
+    else:
 
-  except:
+      if (maxTemp == dayTemp):
 
-    msg = f"Error opening logfile {logFileHum}"
-    syslog.syslog(syslog.LOG_ERR, msg)
+        syslog.syslog(syslog.LOG_INFO, "Nighttime - turning lights OFF")
 
-  else:
+      light.off()
+      maxTemp = nightTemp
 
-    f.writelines(currentDate + ' ' + currentTime + ',' + str(humTrimmed) + '\n')
-    f.close()
-    os.system('tail -n10 %s >%s' %(logFileHum,logFileHumLast10))
-    os.system('tail -n1180 %s > %s' %(logFileHum,logFileHumLast24h))
+    if float(tempConv) < maxTemp:
 
-  if (currentTime >= dayStart) and (currentTime < nightStart):
+      heatingON()
 
-    if (maxTemp == nightTemp):
+    else:
 
-      syslog.syslog(syslog.LOG_INFO, "Daytime, turning lights ON")
+      updateDisplay("S", "1", tempTrimmed, humTrimmed)
+      syslog.syslog(syslog.LOG_INFO, "MAX temperature reached. Sleeping..")
+      heater.off()
+      fan.off()
+      sleep(overheatTimeout)
 
-    light.on()
-    if dispOn:
-
-      disp.set_contrast_control(contrastDay)
-      disp.update()
-
-    maxTemp = dayTemp
-
-  else:
-
-    if (maxTemp == dayTemp):
-
-      syslog.syslog(syslog.LOG_INFO, "Nighttime - turning lights OFF")
-
-    light.off()
-
-    if dispOn:
-
-      disp.set_contrast_control(contrastNight)
-      disp.update()
-
-    maxTemp = nightTemp
-
-  if float(tempConv) < maxTemp:
-
-    heatingON()
-
-  else:
-
-    syslog.syslog(syslog.LOG_INFO, "MAX temperature reached. Sleeping..")
-    heater.off()
-    fan.off()
-
-    if dispOn:
-
-        updateDisplay("S")
-
-    sleep(overheatTimeout)
 
 syslog.closelog()
 heater.off()
 fan.off()
-
-if dispOn:
-
-    disp.close()
-
 syslog.closelog()
