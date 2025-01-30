@@ -1,4 +1,5 @@
-# **What is it precious?**
+# **DEPRECATED - use [terraControl-ng](https://github.com/vonKloppen/terraControl-ng)**
+
 
 It's a simple "daemon" for monitoring temperature and humidity in terrarium, using different sensors and Raspberry PI Zero.
 It creates log as csv file and logs to syslog. Also it can control light and camera.
